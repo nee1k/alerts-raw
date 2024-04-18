@@ -84,21 +84,14 @@ public class StreamProcessorQoE {
                 ))
                 .peek((key, value) -> {
                     try {
-                        // Ensure you are mapping and logging all fields correctly
-                        String json = objectMapper.writeValueAsString(new AlertEvent(
-                                value.getServer_id(),
-                                value.getService_id(),
-                                value.getClient_id(),
-                                "accuracy",  // Example static value for 'metric'
-                                value.getPred_accuracy(),  // This needs to be populated
-                                value.getAdded_time()  // Check if this is getting the correct date
-                        ));
-                        log.info("Accuracy Alert: Key = {}, Value = {}", key, json);
+                        String json = objectMapper.writeValueAsString(value);
+                        log.info("Outgoing record - " + json);
                     } catch (Exception e) {
-                        log.error("Error serializing AlertEvent", e);
+                        log.error("Failed to serialize AlertEvent", e);
                     }
                 })
                 .to(outputTopic, Produced.with(Serdes.String(), alertEventSerde));
+
 
 
         return streamsBuilder;
